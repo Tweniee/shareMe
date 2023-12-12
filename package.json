@@ -3,8 +3,10 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve -o",
     "build": "ng build",
+    "server": "cd server && tsc && nodemon ./dist/server.js",
+    "server:watch": " cd server && tsc -w",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
@@ -18,7 +20,13 @@
     "@angular/platform-browser": "^17.0.0",
     "@angular/platform-browser-dynamic": "^17.0.0",
     "@angular/router": "^17.0.0",
+    "lodash": "^4.17.21",
+    "monaco-editor": "^0.44.0",
+    "ngx-monaco-editor-v2": "^17.0.1",
+    "ngx-socket-io": "^4.6.1",
     "rxjs": "~7.8.0",
+    "short-unique-id": "^5.0.3",
+    "socket.io-client": "^4.7.2",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.2"
   },
@@ -27,12 +35,16 @@
     "@angular/cli": "^17.0.5",
     "@angular/compiler-cli": "^17.0.0",
     "@types/jasmine": "~5.1.0",
+    "@types/lodash": "^4.14.202",
+    "autoprefixer": "^10.4.16",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.3.6",
     "typescript": "~5.2.2"
   }
 }
