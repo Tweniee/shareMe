@@ -3,6 +3,7 @@ import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
+import Redis from 'ioredis';
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -12,22 +13,30 @@ const io = new Server(server, {
   },
 });
 app.use(cors());
-
+const redis = new Redis();
+const code: string = 'function x() {\n\tconsole.log("Welcome!");\n}';
 // Socket.IO connection handling
 io.on('connection', (socket: any) => {
-  console.log('A user connected');
   // Join a room
-  socket.on('joinRoom', (room: any) => {
+  socket.on('joinRoom', async (room: any) => {
     socket.join(room);
     // socket.Broadcast.to(room).emit('User added');
+    const item = await redis.get(room);
+    if (item != null && item != '') {
+      io.in(room).emit('message', item);
+    } else {
+      io.in(room).emit('message', code);
+      await redis.set(room, code,'EX', 300*60);
+    }
     console.log(`User joined room: ${room}`);
   });
 
   // Handle messages from clients
-  socket.on('shareMe', (obj: { id: string; message: string }) => {
-    console.log('message::::: ' + JSON.stringify(obj.message));
+  socket.on('shareMe', async (obj: { id: string; message: string }) => {
+    await redis.set(obj.id, obj.message,'EX', 300*60);
     // Broadcast the message to all connected clients
-    io.in(obj.id).emit('message', obj.message);
+    const item = await redis.get(obj.id);
+    io.in(obj.id).emit('message', item);
   });
 
   // Handle disconnection
