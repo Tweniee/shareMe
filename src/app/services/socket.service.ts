@@ -11,6 +11,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class SocketService {
   private socket: Socket;
   public message$: BehaviorSubject<string> = new BehaviorSubject('');
+  public output$: BehaviorSubject<string> = new BehaviorSubject('');
   // constructor(private socket: Socket) {}
   constructor() {
     this.socket = io(environment.socketUrl);
@@ -30,5 +31,12 @@ export class SocketService {
     });
 
     return this.message$.asObservable();
+  };
+  public getOutputAfterExicution = () => {
+    this.socket.on('outputAfterExicution', (message) =>{
+      this.output$.next(message);
+    });
+
+    return this.output$.asObservable();
   };
 }

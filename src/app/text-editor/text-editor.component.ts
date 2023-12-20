@@ -11,6 +11,7 @@ export class TextEditorComponent implements OnInit {
   messageArray: any[] = [];
   sessionId = this.route.snapshot.params['sessionId'];
   editorOptions = { theme: 'vs-dark', language: 'javascript' };
+  codeOutput: string = '';
   code: string = '';
   constructor(private service: SocketService, private route: ActivatedRoute) {
     this.service.getNewMessage().subscribe((item: any) => {
@@ -18,9 +19,15 @@ export class TextEditorComponent implements OnInit {
         this.code = item;
       }
     });
+   
   }
   ngOnInit(): void {
     this.service.joinRoom(this.sessionId);
+    this.service.getOutputAfterExicution().subscribe((res: string) => {
+      if (res) {
+        this.codeOutput = res;
+      }
+    });
     // this.service.sendTextMessageWithId({
     //   id: this.sessionId,
     //   message: this.code,

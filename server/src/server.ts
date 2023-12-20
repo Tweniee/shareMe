@@ -4,6 +4,8 @@ import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import Redis from 'ioredis';
+import { runVmCode } from './service/vm.server';
+
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -26,17 +28,24 @@ io.on('connection', (socket: any) => {
       io.in(room).emit('message', item);
     } else {
       io.in(room).emit('message', code);
-      await redis.set(room, code,'EX', 300*60);
+      await redis.set(room, code, 'EX', 300 * 60);
     }
     console.log(`User joined room: ${room}`);
   });
 
   // Handle messages from clients
   socket.on('shareMe', async (obj: { id: string; message: string }) => {
-    await redis.set(obj.id, obj.message,'EX', 300*60);
-    // Broadcast the message to all connected clients
-    const item = await redis.get(obj.id);
-    io.in(obj.id).emit('message', item);
+    try {
+      await redis.set(obj.id, obj.message, 'EX', 300 * 60);
+
+      // Broadcast the message to all connected clients
+      const item = await redis.get(obj.id);
+      const result = runVmCode(obj.message);
+      io.in(obj.id).emit('message', item);
+      io.in(obj.id).emit('outputAfterExicution', result);
+    } catch (error) {
+      console.error('Error in shareMe event:', error);
+    }
   });
 
   // Handle disconnection

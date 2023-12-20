@@ -45,6 +45,7 @@ var http_1 = __importDefault(require("http"));
 var socket_io_1 = require("socket.io");
 var cors_1 = __importDefault(require("cors"));
 var ioredis_1 = __importDefault(require("ioredis"));
+var vm_server_1 = require("./service/vm.server");
 var app = (0, express_1.default)();
 var server = http_1.default.createServer(app);
 var io = new socket_io_1.Server(server, {
@@ -85,17 +86,26 @@ io.on('connection', function (socket) {
     }); });
     // Handle messages from clients
     socket.on('shareMe', function (obj) { return __awaiter(void 0, void 0, void 0, function () {
-        var item;
+        var item, result, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, redis.set(obj.id, obj.message, 'EX', 300 * 60)];
+                case 0:
+                    _a.trys.push([0, 3, , 4]);
+                    return [4 /*yield*/, redis.set(obj.id, obj.message, 'EX', 300 * 60)];
                 case 1:
                     _a.sent();
                     return [4 /*yield*/, redis.get(obj.id)];
                 case 2:
                     item = _a.sent();
+                    result = (0, vm_server_1.runVmCode)(obj.message);
                     io.in(obj.id).emit('message', item);
-                    return [2 /*return*/];
+                    io.in(obj.id).emit('outputAfterExicution', result);
+                    return [3 /*break*/, 4];
+                case 3:
+                    error_1 = _a.sent();
+                    console.error('Error in shareMe event:', error_1);
+                    return [3 /*break*/, 4];
+                case 4: return [2 /*return*/];
             }
         });
     }); });
