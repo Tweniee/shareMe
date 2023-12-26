@@ -61,7 +61,7 @@ var code = 'function x() {\n\tconsole.log("Welcome!");\n}';
 io.on('connection', function (socket) {
     // Join a room
     socket.on('joinRoom', function (room) { return __awaiter(void 0, void 0, void 0, function () {
-        var item;
+        var item, result, result;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -71,9 +71,13 @@ io.on('connection', function (socket) {
                     item = _a.sent();
                     if (!(item != null && item != '')) return [3 /*break*/, 2];
                     io.in(room).emit('message', item);
+                    result = (0, vm_server_1.runVmCode)(item);
+                    io.in(room).emit('outputAfterExicution', result);
                     return [3 /*break*/, 4];
                 case 2:
                     io.in(room).emit('message', code);
+                    result = (0, vm_server_1.runVmCode)(code);
+                    io.in(room).emit('outputAfterExicution', result);
                     return [4 /*yield*/, redis.set(room, code, 'EX', 300 * 60)];
                 case 3:
                     _a.sent();

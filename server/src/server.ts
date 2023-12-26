@@ -24,10 +24,15 @@ io.on('connection', (socket: any) => {
     socket.join(room);
     // socket.Broadcast.to(room).emit('User added');
     const item = await redis.get(room);
+
     if (item != null && item != '') {
       io.in(room).emit('message', item);
+      const result = runVmCode(item);
+      io.in(room).emit('outputAfterExicution', result);
     } else {
       io.in(room).emit('message', code);
+      const result = runVmCode(code);
+      io.in(room).emit('outputAfterExicution', result);
       await redis.set(room, code, 'EX', 300 * 60);
     }
     console.log(`User joined room: ${room}`);

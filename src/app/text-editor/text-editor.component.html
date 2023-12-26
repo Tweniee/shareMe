@@ -9,17 +9,21 @@
  -->
 
 <section>
-  <div class="w-screen h-screen grid grid-rows-2 text-white text-4xl md:grid-cols-2">
+  <div
+    class="w-screen h-screen grid grid-rows-2 text-white text-4xl md:grid-cols-2"
+  >
     <div class="w-full h-full bg-blue-800 centered md:h-screen">
-        <ngx-monaco-editor
-          style="height: 100%; width: 100%;"
-          [options]="editorOptions"
-          [(ngModel)]="code"
-          (input)="change()"
-        ></ngx-monaco-editor>
+      <div>
+        <button (click)="change()">Run</button>
+      </div>
+      <ngx-monaco-editor
+        style="height: 100%; width: 100%"
+        [options]="editorOptions"
+        [(ngModel)]="code"
+      ></ngx-monaco-editor>
     </div>
     <div class="w-full h-full bg-black centered md:h-screen">
-      <p>{{codeOutput}}</p>
+      <p>{{ codeOutput }}</p>
     </div>
   </div>
 </section>
